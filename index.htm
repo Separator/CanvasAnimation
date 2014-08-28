@@ -2,27 +2,23 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="ru" xml:lang="ru">
 	<head>
 		<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
-		<title>Visualizer</title>
+		<title>CanvasAnimation</title>
 
         <link rel="stylesheet" type="text/css" href="css/index.css" />
 		
 		<!-- COMMON LIBS -->
 		<script type="text/javascript" src="js/common/jquery.js"></script>
 		<script type="text/javascript" src="js/common/underscore.js"></script>
-		
-        <!-- Божественные силы мироздания ;) -->
-        <script type="text/javascript" src="js/libs/gods/cron.js"></script>
-        <script type="text/javascript" src="js/libs/gods/matherial.js"></script>
 
         <!-- Assets -->
-        <script type="text/javascript" src="js/libs/assets/js/assets.js"></script>
+        <script type="text/javascript" src="js/libs/assets.js"></script>
 
         <!-- Animation -->
-        <script type="text/javascript" src="js/libs/animation/js/animation.js"></script>
+        <script type="text/javascript" src="js/libs/animation.js"></script>
 
 		<script type="text/javascript">
 		/* <![CDATA[ */
-            var Common = {Gods:{}};
+            var Common = {};
 
 			$(document).ready(function() {
                 Common['Assets'] = new Assets({
@@ -35,16 +31,7 @@
                         Common['Animation'].start();
                     },
                     "unitsLoaded": function(units) {
-                        // стихия земли:
-
-
-
-                        // материальные сущности:
-                        Common['Gods']['Matherial'] = new MatherialGod({
-                            "availableObjects": units
-                        });
-                        // Запуск игрового цикла:
-                        Common['Gods']['Cron'] = new CronGod();
+                        // some code...
                     }
                 });
 
@@ -56,10 +43,10 @@
 	</head>
 
 	<body>
-		<h1>Visualizer:</h1>
+		<h1>CanvasAnimation:</h1>
 
         <div id="canvas_wrapper">
-            <canvas id="visualizer" width="10" height="10"></canvas>
+            <canvas id="visualizer" width="800" height="400"></canvas>
         </div>
 	</body>
 </html>

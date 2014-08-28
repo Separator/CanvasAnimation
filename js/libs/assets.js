@@ -9,7 +9,7 @@
 
 function Assets(options) {
     var defaultSettings = {
-        "animationsDir":            "assets/animations",
+        "animationsDir":            "assets",
         "unitsDir":                 "assets/units",
         "assetsCatalog":            "catalog.json",
         "assetDescription":         "description.json",
@@ -247,7 +247,7 @@ function Assets(options) {
         // подгребаем анимацию:
         this.animationLoad(this['animationsDir'], this['assetsCatalog']);
         // подгребаем юниты:
-        this.unitLoad(this['unitsDir'], this['assetsCatalog']);
+        //this.unitLoad(this['unitsDir'], this['assetsCatalog']);
         return true;
     };
     // инициализация:
