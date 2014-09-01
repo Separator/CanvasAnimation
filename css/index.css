@@ -13,10 +13,10 @@ h1 {
     width: 800px;
     /*height: 400px;*/
     margin: 10px auto;
-    border: 1px solid #222;
 }
 
 canvas {
+    border: 1px solid #222;
     /*width: 100%;
     height: 100%;*/
 }

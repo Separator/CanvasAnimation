@@ -25,11 +25,14 @@ function Animation(options) {
         "minCanvasHeight":      100,
         "context":              null,
 
-        "worldX":               0,
-        "worldY":               0,
+        "hasOffset":            false,
+        "halfWidth":            null,
+        "halfHeight":           null,
+
+
+        "worldX":               null,
+        "worldY":               null,
         "drawRadius":           100,
-        "offsetX":              null,
-        "offsetY":              null,
         "rX1":                  null,
         "rX2":                  null,
         "rY1":                  null,
@@ -37,26 +40,21 @@ function Animation(options) {
     };
 
     /**
-     * Передвижение "камеры"
-     * @param X
-     * @param Y
+     * Очистить холст
      */
-    this.moveCam = function(X, Y) {
-        this['worldX'] = X = Math.round(X);
-        this['worldY'] = Y = Math.round(Y);
-        var offsetX = this['offsetX'] + this['drawRadius'];
-        var offsetY = this['offsetY'] + this['drawRadius'];
-        this['rX1'] = X - offsetX;
-        this['rX2'] = X + offsetX;
-        this['rY1'] = Y - offsetY;
-        this['rY2'] = Y + offsetY;
+    this.clear = function() {
+        this['context'].clearRect(
+            this['worldX'] - this['halfWidth'],
+            this['worldY'] - this['halfHeight'],
+            this['canvasWidth'], this['canvasHeight']
+        );
     };
     /**
-     * Изменение размера области просмотра
+     * Изменение размера холста
      * @param width
      * @param height
      */
-    this.sizeCam = function(width, height) {
+    this.sizeCanvas = function(width, height) {
         width  = (Math.round(width)  >= this['minCanvasWidth'])  ? Math.round(width)  : this['minCanvasWidth'];
         height = (Math.round(height) >= this['minCanvasHeight']) ? Math.round(height) : this['minCanvasHeight'];
         $(this['canvas'])
@@ -64,9 +62,61 @@ function Animation(options) {
             .attr('height', height);
         this['canvasWidth']  = width;
         this['canvasHeight'] = height;
-        this['offsetX']  = Math.round(this['canvasWidth']  / 2);
-        this['offsetY']  = Math.round(this['canvasHeight']  / 2);
-        this.moveCam(this['worldX'], this['worldY']);
+        this['halfWidth']    = Math.round(this['canvasWidth']  / 2);
+        this['halfHeight']   = Math.round(this['canvasHeight']  / 2);
+    };
+    /**
+     * Смещение камеры на заданное расстояние
+     * @param offsetX
+     * @param offsetY
+     */
+    this.offsetCam = function(offsetX, offsetY) {
+        offsetX = Math.round(offsetX);
+        offsetY = Math.round(offsetY);
+        this['hasOffset'] = true;
+        this['worldX'] += offsetX;
+        this['worldY'] += offsetY;
+        this['context'].translate( - offsetX, - offsetY);
+        // координаты квадрата отрисовки:
+        this['rX1'] = this['worldX'] - this['halfWidth'] - this['drawRadius'];
+        this['rX2'] = this['worldX'] + this['halfWidth'] + this['drawRadius'];
+        this['rY1'] = this['worldY'] - this['halfHeight'] - this['drawRadius'];
+        this['rY2'] = this['worldY'] + this['halfHeight'] + this['drawRadius'];
+    };
+    /**
+     * Сброс холста в значения по умолчанию
+     */
+    this.normalize = function() {
+        this.sizeCanvas(this['canvasWidth'], this['canvasHeight']);
+        if (this['hasOffset']) {
+            this['context'].restore();
+            this['hasOffset'] = false;
+        };
+        this['context'].save();
+        this['worldX'] = this['halfWidth'];
+        this['worldY'] = this['halfHeight'];
+        this.offsetCam( - this['halfWidth'], - this['halfHeight']);
+    };
+    /**
+     * Переместить камеру в указанную точку
+     * @param worldX
+     * @param worldY
+     */
+    this.moveCamTo = function(worldX, worldY) {
+        this.offsetCam(Math.round(worldX) - this['worldX'], Math.round(worldY) - this['worldY']);
+    };
+    /**
+     * Изменить размеры области просмотра
+     * @param width
+     * @param height
+     */
+    this.sizeCam = function(width, height) {
+        var currentWorldX = this['worldX'];
+        var currentWorldY = this['worldY'];
+        this['canvasWidth']  = Math.round(width);
+        this['canvasHeight'] = Math.round(height);
+        this.normalize();
+        this.moveCamTo(currentWorldX, currentWorldY);
     };
     /**
      * Проверка на попадание анимации в область просмотра
@@ -90,7 +140,7 @@ function Animation(options) {
      * @return {Number}
      */
     this.worldToCanvasCoordinateX = function(X) {
-        return Math.round(X) - this['worldX'] + this['offsetX'];
+        return Math.round(X);
     };
     /**
      * Преобразование координаты Y мира в координаты холста
@@ -99,7 +149,7 @@ function Animation(options) {
      * @return {Number}
      */
     this.worldToCanvasCoordinateY = function(Y) {
-        return Math.round(Y) - this['worldY'] + this['offsetY'];
+        return Math.round(Y);
     };
     /**
      * Преобразование координаты Z мира в координаты холста
@@ -372,7 +422,13 @@ function Animation(options) {
                 };
             };
             // очищаем холст и выводим изображения:
-            context.clearRect(0, 0, that['canvasWidth'], that['canvasHeight']);
+            that.clear();
+            /*context.clearRect(
+                this['worldX'] - this['halfWidth'],
+                this['worldY'] - this['halfHeight'],
+                that['canvasWidth'], that['canvasHeight']
+            );*/
+
             var len = sceneBuffer.length;
             for (var i = 0; i < sceneBuffer.length; i++) {
                 context.drawImage(sceneBuffer[i]['image'], sceneBuffer[i]['X'], sceneBuffer[i]['Y']);
@@ -387,10 +443,10 @@ function Animation(options) {
     this.init = function(options) {
         // подгребаем значения по умолчанию:
         $.extend(true, this, _.clone(defaultSettings), options);
-        // инициализируем canvas:
-        this.sizeCam(this['canvasWidth'], this['canvasHeight']);
         // получаем контекст:
         this['context'] = this['canvas'].getContext('2d');
+        // инициализируем canvas:
+        this.normalize();
         return true;
     }
     // инициализация:
