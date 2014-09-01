@@ -12,9 +12,7 @@ function Animation(options) {
         "intervalIndex":        -1,
         "interval":             40,
 
-
         "assets":               null,
-
         "animationList":        [],
         "objectsList":          {},
 
@@ -28,8 +26,6 @@ function Animation(options) {
         "hasOffset":            false,
         "halfWidth":            null,
         "halfHeight":           null,
-
-
         "worldX":               null,
         "worldY":               null,
         "drawRadius":           100,
