@@ -42,7 +42,7 @@ function Animation(options) {
         this['context'].clearRect(
             this['worldX'] - this['halfWidth'],
             this['worldY'] - this['halfHeight'],
-            this['canvasWidth'], this['canvasHeight']
+            this['canvasWidth'] + 10, this['canvasHeight'] + 10
         );
     };
     /**
@@ -120,10 +120,12 @@ function Animation(options) {
      * @param Y
      * @return {Boolean}
      */
-    this.checkAnimationCoordinates = function(X, Y) {
+    this.checkAnimationCoordinates = function(X, Y, width, height) {
+        width  = width || 0;
+        height = height || 0;
         X = Math.round(X);
         Y = Math.round(Y);
-        if (this['rX1'] <= X && X<=this['rX2'] && this['rY1']<=Y && Y<=this['rY2']) {
+        if (this['rX1'] <= X+width && X<=this['rX2'] && this['rY1']<=Y+height && Y<=this['rY2']) {
             return true;
         } else {
             return false;
