@@ -272,6 +272,7 @@ function Animation(options) {
                     "Z":            animation['Z'],
                     "ObjectID":     animation['ObjectID'],
                     "ObjectName":   animation['ObjectName'],
+                    "alpha":        animation['alpha'],
                     "ObjectAction": animation['anim']['end'],
                     "lastExec":     (new Date()).getTime(),
                     "duration":     0,
@@ -332,6 +333,7 @@ function Animation(options) {
             "ObjectID":     animation['ObjectID'],
             "ObjectName":   animation['ObjectName'],
             "ObjectAction": animation['ObjectAction'],
+            "alpha":        (animation['alpha']===undefined || animation['alpha']===null) ? 1 : animation['alpha'],
             "lastExec":     (new Date()).getTime(),
             "duration":     0,
             "rotate":       animation['rotate'],
@@ -414,6 +416,7 @@ function Animation(options) {
                                 'X':        animation['X'],
                                 'Y':        animation['Y'],
                                 'rotate':   animation['rotate'],
+                                'alpha':    animation['alpha'],
                                 'image':    assetFrames[j]['img']
                             });
                             break;
@@ -423,15 +426,16 @@ function Animation(options) {
             };
             // очищаем холст и выводим изображения:
             that.clear();
-            /*context.clearRect(
-                this['worldX'] - this['halfWidth'],
-                this['worldY'] - this['halfHeight'],
-                that['canvasWidth'], that['canvasHeight']
-            );*/
-
+            var globalAlpha = context.globalAlpha;
             var len = sceneBuffer.length;
             for (var i = 0; i < sceneBuffer.length; i++) {
+                if (sceneBuffer[i]['alpha'] != 1) {
+                    context.globalAlpha = sceneBuffer[i]['alpha'];
+                };
                 context.drawImage(sceneBuffer[i]['image'], sceneBuffer[i]['X'], sceneBuffer[i]['Y']);
+                if (sceneBuffer[i]['alpha'] != 1) {
+                    context.globalAlpha = globalAlpha;
+                };
             };
         }, this['interval']);
     };
