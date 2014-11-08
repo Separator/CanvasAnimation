@@ -1,5 +1,6 @@
 {
-    "assets": [
-        "sorcerer"
-    ]
+    "sorcerer": {
+        "type": "animation",
+        "description": "Список анимаций волшебника"
+    }
 }
